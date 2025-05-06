@@ -5,6 +5,26 @@ import './App.css';
 function App() {
   const [clickedCountries, setClickedCountries] = useState([]);
 
+  // 初回にURLからクエリを読み込む
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const countries = params.get('countries');
+    if (countries) {
+      setClickedCountries(countries.split(','));
+    }
+  }, []);
+
+  // URLを更新（状態が変わるたび）
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (clickedCountries.length > 0) {
+      params.set('countries', clickedCountries.join(','));
+      window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
+    } else {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [clickedCountries]);
+
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://www.gstatic.com/charts/loader.js';
