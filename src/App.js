@@ -1,30 +1,7 @@
-// src/App.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 
 function App() {
-  const [clickedCountries, setClickedCountries] = useState([]);
-
-  // 初回にURLからクエリを読み込む
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const countries = params.get('countries');
-    if (countries) {
-      setClickedCountries(countries.split(','));
-    }
-  }, []);
-
-  // URLを更新（状態が変わるたび）
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (clickedCountries.length > 0) {
-      params.set('countries', clickedCountries.join(','));
-      window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
-    } else {
-      window.history.replaceState({}, '', window.location.pathname);
-    }
-  }, [clickedCountries]);
-
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://www.gstatic.com/charts/loader.js';
@@ -36,30 +13,54 @@ function App() {
     };
     document.body.appendChild(script);
 
-    function drawRegionsMap() {
-      const data = window.google.visualization.arrayToDataTable([
-        ['Country', 'Popularity'],
-        ...clickedCountries.map(country => [country, 1000])
-      ]);
+    window.addEventListener('popstate', drawRegionsMap);
+  }, []);
 
-      const options = {
-        colorAxis: { colors: ['#e0e0e0', '#ff5252'] },
-        legend: 'none'
-      };
+  function getCountriesFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const countries = params.get('countries');
+    return countries ? countries.split(',') : [];
+  }
 
-      const chart = new window.google.visualization.GeoChart(
-        document.getElementById('regions_div')
-      );
-
-      window.google.visualization.events.addListener(chart, 'regionClick', (e) => {
-        setClickedCountries(prev =>
-          prev.includes(e.region) ? prev : [...prev, e.region]
-        );
-      });
-
-      chart.draw(data, options);
+  function updateUrl(countries) {
+    const params = new URLSearchParams();
+    if (countries.length > 0) {
+      params.set('countries', countries.join(','));
     }
-  }, [clickedCountries]);
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.pushState({}, '', newUrl);
+  }
+
+  function drawRegionsMap() {
+    const clickedCountries = getCountriesFromUrl();
+
+    const data = window.google.visualization.arrayToDataTable([
+      ['Country', 'Popularity'],
+      ...clickedCountries.map((country) => [country, 1000]),
+    ]);
+
+    const options = {
+      colorAxis: { colors: ['#e0e0e0', '#ff5252'] },
+      legend: 'none',
+    };
+
+    const chart = new window.google.visualization.GeoChart(
+      document.getElementById('regions_div')
+    );
+
+    window.google.visualization.events.addListener(chart, 'regionClick', (e) => {
+      let countries = getCountriesFromUrl();
+      if (countries.includes(e.region)) {
+        countries = countries.filter((c) => c !== e.region); // 削除
+      } else {
+        countries.push(e.region); // 追加
+      }
+      updateUrl(countries);
+      drawRegionsMap(); // 再描画
+    });
+
+    chart.draw(data, options);
+  }
 
   return (
     <div className="app-container">
