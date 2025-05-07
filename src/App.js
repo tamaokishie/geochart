@@ -100,7 +100,7 @@ function App() {
               checked={selectedCountries.includes(code)}
               onChange={() => handleCheckboxChange(code)}
             />
-            {code}
+            {name}
           </label>
         ))}
       </div>
