@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import './App.css';
+import { countryList } from './country_list';
 
-const countryList = [
-  { code: 'US', name: 'United States' },
-  { code: 'CA', name: 'Canada' },
-  { code: 'JP', name: 'Japan' },
-];
+import './App.css';
 
 function App() {
   const [level, setLevel] = useState(0);
