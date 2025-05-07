@@ -1,13 +1,20 @@
 .app-container {
-  text-align: center;
-  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 20px;
   background-color: #ffffff;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 .app-title {
-  margin-bottom: 10px;
-  color: #222;
+  text-align: center;
+}
+
+.geo-chart {
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 16 / 9;
 }
 
 .level-label {
@@ -15,13 +22,6 @@
   font-weight: 500;
   color: #444;
   margin-bottom: 20px;
-}
-
-.geo-chart {
-  margin: 0 auto;
-  width: 90%;
-  max-width: 900px;
-  height: 500px;
 }
 
 .checkbox-list {
