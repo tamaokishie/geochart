@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 
 function App() {
+  const [level, setLevel] = useState(0);
+
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://www.gstatic.com/charts/loader.js';
@@ -33,6 +35,7 @@ function App() {
 
   function drawRegionsMap() {
     const clickedCountries = getCountriesFromUrl();
+    setLevel(clickedCountries.length); // ← レベル更新
 
     const data = window.google.visualization.arrayToDataTable([
       ['Country', 'Popularity'],
@@ -51,12 +54,12 @@ function App() {
     window.google.visualization.events.addListener(chart, 'regionClick', (e) => {
       let countries = getCountriesFromUrl();
       if (countries.includes(e.region)) {
-        countries = countries.filter((c) => c !== e.region); // 削除
+        countries = countries.filter((c) => c !== e.region);
       } else {
-        countries.push(e.region); // 追加
+        countries.push(e.region);
       }
       updateUrl(countries);
-      drawRegionsMap(); // 再描画
+      drawRegionsMap();
     });
 
     chart.draw(data, options);
@@ -65,9 +68,11 @@ function App() {
   return (
     <div className="app-container">
       <h1 className="app-title">Visited Countries Map</h1>
+      <p className="level-label">Level: {level}</p>
       <div id="regions_div" className="geo-chart"></div>
     </div>
   );
+  
 }
 
 export default App;
