@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 
+const countryList = [
+  { code: 'US', name: 'United States' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'JP', name: 'Japan' },
+];
+
 function App() {
   const [level, setLevel] = useState(0);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -11,7 +18,10 @@ function App() {
       window.google.charts.load('current', {
         packages: ['geochart'],
       });
-      window.google.charts.setOnLoadCallback(drawRegionsMap);
+      window.google.charts.setOnLoadCallback(() => {
+        setScriptLoaded(true);
+        drawRegionsMap();
+      });
     };
     document.body.appendChild(script);
 
@@ -34,8 +44,10 @@ function App() {
   }
 
   function drawRegionsMap() {
+    if (!window.google || !window.google.visualization) return;
+
     const clickedCountries = getCountriesFromUrl();
-    setLevel(clickedCountries.length); // ← レベル更新
+    setLevel(clickedCountries.length);
 
     const data = window.google.visualization.arrayToDataTable([
       ['Country', 'Popularity'],
@@ -65,14 +77,39 @@ function App() {
     chart.draw(data, options);
   }
 
+  const handleCheckboxChange = (code) => {
+    let countries = getCountriesFromUrl();
+    if (countries.includes(code)) {
+      countries = countries.filter((c) => c !== code);
+    } else {
+      countries.push(code);
+    }
+    updateUrl(countries);
+    drawRegionsMap();
+  };
+
+  const selectedCountries = getCountriesFromUrl();
+
   return (
     <div className="app-container">
       <h1 className="app-title">Visited Countries Map</h1>
       <p className="level-label">Level: {level}</p>
       <div id="regions_div" className="geo-chart"></div>
+
+      <div className="checkbox-list">
+        {countryList.map(({ code, name }) => (
+          <label key={code} className="checkbox-item">
+            <input
+              type="checkbox"
+              checked={selectedCountries.includes(code)}
+              onChange={() => handleCheckboxChange(code)}
+            />
+            {code}
+          </label>
+        ))}
+      </div>
     </div>
   );
-  
 }
 
 export default App;
