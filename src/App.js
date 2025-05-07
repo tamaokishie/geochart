@@ -1,11 +1,28 @@
 import React, { useEffect, useState } from 'react';
+import './App.css';
 import { countryList } from './country_list';
 
-import './App.css';
-
 function App() {
-  const [level, setLevel] = useState(0);
-  const [scriptLoaded, setScriptLoaded] = useState(false);
+  const [selectedCountries, setSelectedCountries] = useState([]);
+
+  // URLクエリから状態を復元
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const countries = params.get('countries');
+    if (countries) {
+      setSelectedCountries(countries.split(','));
+    }
+  }, []);
+
+  // URL更新
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedCountries.length > 0) {
+      params.set('countries', selectedCountries.join(','));
+    }
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState({}, '', newUrl);
+  }, [selectedCountries]);
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -14,77 +31,46 @@ function App() {
       window.google.charts.load('current', {
         packages: ['geochart'],
       });
-      window.google.charts.setOnLoadCallback(() => {
-        setScriptLoaded(true);
-        drawRegionsMap();
-      });
+      window.google.charts.setOnLoadCallback(drawRegionsMap);
     };
     document.body.appendChild(script);
-
     window.addEventListener('popstate', drawRegionsMap);
-  }, []);
 
-  function getCountriesFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    const countries = params.get('countries');
-    return countries ? countries.split(',') : [];
-  }
+    function drawRegionsMap() {
+      const data = window.google.visualization.arrayToDataTable([
+        ['Country', 'Popularity'],
+        ...selectedCountries.map((c) => [c, 1000]),
+      ]);
 
-  function updateUrl(countries) {
-    const params = new URLSearchParams();
-    if (countries.length > 0) {
-      params.set('countries', countries.join(','));
+      const options = {
+        colorAxis: { colors: ['#e0e0e0', '#ff5252'] },
+        legend: 'none',
+      };
+
+      const chart = new window.google.visualization.GeoChart(
+        document.getElementById('regions_div')
+      );
+
+      window.google.visualization.events.addListener(chart, 'regionClick', (e) => {
+        const clickedCode = e.region;
+        setSelectedCountries((prev) =>
+          prev.includes(clickedCode)
+            ? prev.filter((c) => c !== clickedCode)
+            : [...prev, clickedCode]
+        );
+      });
+
+      chart.draw(data, options);
     }
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
-    window.history.pushState({}, '', newUrl);
-  }
-
-  function drawRegionsMap() {
-    if (!window.google || !window.google.visualization) return;
-
-    const clickedCountries = getCountriesFromUrl();
-    setLevel(clickedCountries.length);
-
-    const data = window.google.visualization.arrayToDataTable([
-      ['Country', 'Popularity'],
-      ...clickedCountries.map((country) => [country, 1000]),
-    ]);
-
-    const options = {
-      colorAxis: { colors: ['#e0e0e0', '#ff5252'] },
-      legend: 'none',
-    };
-
-    const chart = new window.google.visualization.GeoChart(
-      document.getElementById('regions_div')
-    );
-
-    window.google.visualization.events.addListener(chart, 'regionClick', (e) => {
-      let countries = getCountriesFromUrl();
-      if (countries.includes(e.region)) {
-        countries = countries.filter((c) => c !== e.region);
-      } else {
-        countries.push(e.region);
-      }
-      updateUrl(countries);
-      drawRegionsMap();
-    });
-
-    chart.draw(data, options);
-  }
+  }, [selectedCountries]);
 
   const handleCheckboxChange = (code) => {
-    let countries = getCountriesFromUrl();
-    if (countries.includes(code)) {
-      countries = countries.filter((c) => c !== code);
-    } else {
-      countries.push(code);
-    }
-    updateUrl(countries);
-    drawRegionsMap();
+    setSelectedCountries((prev) =>
+      prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]
+    );
   };
 
-  const selectedCountries = getCountriesFromUrl();
+  const level = selectedCountries.length;
 
   return (
     <div className="app-container">
@@ -93,15 +79,20 @@ function App() {
       <div id="regions_div" className="geo-chart"></div>
 
       <div className="checkbox-list">
-        {countryList.map(({ code, name }) => (
-          <label key={code} className="checkbox-item">
-            <input
-              type="checkbox"
-              checked={selectedCountries.includes(code)}
-              onChange={() => handleCheckboxChange(code)}
-            />
-            {name}
-          </label>
+        {Object.entries(countryList).map(([region, countries]) => (
+          <div key={region}>
+            <h3>{region}</h3>
+            {countries.map(({ code, name }) => (
+              <label key={code} className="checkbox-item">
+                <input
+                  type="checkbox"
+                  checked={selectedCountries.includes(code)}
+                  onChange={() => handleCheckboxChange(code)}
+                />
+                {name}
+              </label>
+            ))}
+          </div>
         ))}
       </div>
     </div>
