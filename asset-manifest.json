@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/geochart/static/css/main.b9881ff5.css",
-    "main.js": "/geochart/static/js/main.6b7549d7.js",
+    "main.css": "/geochart/static/css/main.9b1c4ae6.css",
+    "main.js": "/geochart/static/js/main.a9e9299b.js",
     "static/js/453.291797a2.chunk.js": "/geochart/static/js/453.291797a2.chunk.js",
     "index.html": "/geochart/index.html",
-    "main.b9881ff5.css.map": "/geochart/static/css/main.b9881ff5.css.map",
-    "main.6b7549d7.js.map": "/geochart/static/js/main.6b7549d7.js.map",
+    "main.9b1c4ae6.css.map": "/geochart/static/css/main.9b1c4ae6.css.map",
+    "main.a9e9299b.js.map": "/geochart/static/js/main.a9e9299b.js.map",
     "453.291797a2.chunk.js.map": "/geochart/static/js/453.291797a2.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.b9881ff5.css",
-    "static/js/main.6b7549d7.js"
+    "static/css/main.9b1c4ae6.css",
+    "static/js/main.a9e9299b.js"
   ]
 }
