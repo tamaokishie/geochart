@@ -31,7 +31,9 @@ function App() {
       window.google.charts.load('current', {
         packages: ['geochart'],
       });
-      window.google.charts.setOnLoadCallback(drawRegionsMap);
+      window.google.charts.setOnLoadCallback(() => {
+        setTimeout(drawRegionsMap, 100); // 100ms 遅延して描画
+      });
     };
     document.body.appendChild(script);
     window.addEventListener('popstate', drawRegionsMap);
