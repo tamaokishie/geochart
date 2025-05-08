@@ -89,9 +89,6 @@ function App() {
     <div className="app-container">
       <h1 className="app-title">Visited Countries Map</h1>
       <p className="level-label">Level: {level}</p>
-      <p className="share-note">
-        Your selected countries are reflected in the URL. Share this link to let others see your map.
-      </p>
       <div id="regions_div" className="geo-chart"></div>
 
       <div className="checkbox-list">
