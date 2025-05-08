@@ -5,6 +5,7 @@ import { countryList } from './country_list';
 function App() {
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [openRegions, setOpenRegions] = useState({});
+  const [readyToDraw, setReadyToDraw] = useState(false);
   const isMobile = window.innerWidth < 768;
 
   useEffect(() => {
@@ -13,6 +14,7 @@ function App() {
     if (countries) {
       setSelectedCountries(countries.split(','));
     }
+    setReadyToDraw(true);
   }, []);
 
   useEffect(() => {
@@ -32,7 +34,9 @@ function App() {
         packages: ['geochart'],
       });
       window.google.charts.setOnLoadCallback(() => {
-        setTimeout(drawRegionsMap, 100); // 100ms 遅延して描画
+        if (readyToDraw) {
+          setTimeout(drawRegionsMap, 100);
+        }
       });
     };
     document.body.appendChild(script);
@@ -64,7 +68,7 @@ function App() {
 
       chart.draw(data, options);
     }
-  }, [selectedCountries]);
+  }, [readyToDraw, selectedCountries]);
 
   const handleCheckboxChange = (code) => {
     setSelectedCountries((prev) =>
@@ -85,6 +89,9 @@ function App() {
     <div className="app-container">
       <h1 className="app-title">Visited Countries Map</h1>
       <p className="level-label">Level: {level}</p>
+      <p className="share-note">
+        Your selected countries are reflected in the URL. Share this link to let others see your map.
+      </p>
       <div id="regions_div" className="geo-chart"></div>
 
       <div className="checkbox-list">
