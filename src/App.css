@@ -39,11 +39,11 @@
   flex-direction: column;
 }
 
-.checkbox-group h3 {
-  margin-bottom: 12px;
+.region-header {
   font-size: 1.2rem;
   font-weight: bold;
-  text-align: left;
+  margin-bottom: 8px;
+  cursor: default;
 }
 
 .checkbox-item {
@@ -51,4 +51,22 @@
   margin-bottom: 6px;
   font-size: 0.95rem;
   white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .region-header {
+    cursor: pointer;
+    background-color: #f0f0f0;
+    padding: 8px;
+    border-radius: 4px;
+  }
+
+  .region-country-list {
+    padding-left: 12px;
+    margin-top: 6px;
+  }
+
+  .checkbox-list {
+    grid-template-columns: 1fr;
+  }
 }

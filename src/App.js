@@ -4,8 +4,9 @@ import { countryList } from './country_list';
 
 function App() {
   const [selectedCountries, setSelectedCountries] = useState([]);
+  const [openRegions, setOpenRegions] = useState({});
+  const isMobile = window.innerWidth < 768;
 
-  // URLクエリから状態を復元
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const countries = params.get('countries');
@@ -14,7 +15,6 @@ function App() {
     }
   }, []);
 
-  // URL更新
   useEffect(() => {
     const params = new URLSearchParams();
     if (selectedCountries.length > 0) {
@@ -70,6 +70,13 @@ function App() {
     );
   };
 
+  const toggleRegion = (region) => {
+    setOpenRegions((prev) => ({
+      ...prev,
+      [region]: !prev[region],
+    }));
+  };
+
   const level = selectedCountries.length;
 
   return (
@@ -79,21 +86,33 @@ function App() {
       <div id="regions_div" className="geo-chart"></div>
 
       <div className="checkbox-list">
-        {Object.entries(countryList).map(([region, countries]) => (
-          <div key={region}>
-            <h3>{region}</h3>
-            {countries.map(({ code, name }) => (
-              <label key={code} className="checkbox-item">
-                <input
-                  type="checkbox"
-                  checked={selectedCountries.includes(code)}
-                  onChange={() => handleCheckboxChange(code)}
-                />
-                {name}
-              </label>
-            ))}
-          </div>
-        ))}
+        {Object.entries(countryList).map(([region, countries]) => {
+          const isOpen = isMobile ? openRegions[region] : true;
+          return (
+            <div key={region} className="checkbox-group">
+              <h3
+                className="region-header"
+                onClick={() => isMobile && toggleRegion(region)}
+              >
+                {region}
+              </h3>
+              {isOpen && (
+                <div className="region-country-list">
+                  {countries.map(({ code, name }) => (
+                    <label key={code} className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={selectedCountries.includes(code)}
+                        onChange={() => handleCheckboxChange(code)}
+                      />
+                      {name}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
