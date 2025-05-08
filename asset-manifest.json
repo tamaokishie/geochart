@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/geochart/static/css/main.b9881ff5.css",
-    "main.js": "/geochart/static/js/main.7eff0ff2.js",
+    "main.js": "/geochart/static/js/main.6b7549d7.js",
     "static/js/453.291797a2.chunk.js": "/geochart/static/js/453.291797a2.chunk.js",
     "index.html": "/geochart/index.html",
     "main.b9881ff5.css.map": "/geochart/static/css/main.b9881ff5.css.map",
-    "main.7eff0ff2.js.map": "/geochart/static/js/main.7eff0ff2.js.map",
+    "main.6b7549d7.js.map": "/geochart/static/js/main.6b7549d7.js.map",
     "453.291797a2.chunk.js.map": "/geochart/static/js/453.291797a2.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.b9881ff5.css",
-    "static/js/main.7eff0ff2.js"
+    "static/js/main.6b7549d7.js"
   ]
 }
