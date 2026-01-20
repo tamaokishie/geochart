@@ -34,7 +34,6 @@ function MapPage() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [menuOpen, setMenuOpen] = useState(false);
   const [ownerName, setOwnerName] = useState("");
-  const [infoMsg, setInfoMsg] = useState("");
 
   const isOwner = user?.uid === uid;
 
