@@ -2,9 +2,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 8px 16px 20px;
   background-color: #ffffff;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Segoe UI", sans-serif;
 }
 
 .app-title {
@@ -14,15 +14,154 @@
 
 .geo-chart {
   width: 100%;
-  max-width: 900px;
-  aspect-ratio: 16 / 9;
+  max-width: 1200px;
+  height: 600px;
 }
 
-.level-label {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: #444;
-  margin-bottom: 20px;
+/* ヘッダー*/
+.app-header-row {
+  width: 100%;
+  padding: 10px 14px;
+  margin: 0 0 12px;
+
+  box-shadow: none;
+  border: none;
+
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+
+  background: transparent;
+}
+
+/* タイトル */
+.app-header-row .app-title {
+  margin: 0;
+  font-size: 1.25rem;
+  text-align: left;
+  line-height: 1.2;
+}
+
+/* レベル */
+.app-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.app-level {
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.55);
+  font-weight: 600;
+}
+
+/* アカウント */
+.user-menu-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.avatar-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 999px;
+}
+
+.avatar-btn:focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.25);
+  outline-offset: 3px;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  object-fit: cover;
+}
+
+.user-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: 280px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.14);
+  overflow: hidden;
+  z-index: 50;
+}
+
+.user-menu-top {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  align-items: center;
+}
+
+.user-menu-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  object-fit: cover;
+}
+
+.user-menu-meta {
+  min-width: 0;
+}
+
+.user-menu-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-menu-email {
+  margin-top: 2px;
+  font-size: 0.78rem;
+  color: rgba(0, 0, 0, 0.55);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-menu-sep {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px 16px;
+  width: 100%;
+
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 600;
+  color: #202124;
+
+  cursor: pointer;
+}
+
+.user-menu-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.user-menu-icon {
+  font-size: 20px;
+  color: #5f6368;
 }
 
 .checkbox-list {
@@ -46,14 +185,69 @@
   cursor: default;
 }
 
+/* チェックボックス */
 .checkbox-item {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   margin-bottom: 6px;
   font-size: 0.95rem;
   white-space: nowrap;
 }
 
+/* Googleのログインボタン */
+.google-btn {
+  all: unset;
+  cursor: pointer;
+}
+
+.google-btn img {
+  display: block;
+}
+
+/* 未ログイン時に編集しようとした時のアラート */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* サインインボタン */
+.sign-in-btn {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sign-in-btn:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* スマホ */
 @media (max-width: 768px) {
+  .geo-chart {
+    height: 40vh;
+    max-width: none;
+  }
+
+  .checkbox-list {
+    margin-top: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
   .region-header {
     cursor: pointer;
     background-color: #f0f0f0;
@@ -64,9 +258,5 @@
   .region-country-list {
     padding-left: 12px;
     margin-top: 6px;
-  }
-
-  .checkbox-list {
-    grid-template-columns: 1fr;
   }
 }
