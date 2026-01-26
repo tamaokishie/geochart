@@ -40,12 +40,11 @@ export default function SetupProfile() {
   const [user, setUser] = useState(null);
   const [displayName, setDisplayName] = useState("");
   const [countryCode, setCountryCode] = useState("");
-  const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [touched, setTouched] = useState(false);
 
   const countryName = useMemo(() => {
-    return COUNTRY_OPTIONS.find((c) => c.code === countryCode)?.name || "Japan";
+    return COUNTRY_OPTIONS.find((c) => c.code === countryCode)?.label;
   }, [countryCode]);
 
   // 1) ログイン状態の確定
@@ -86,14 +85,6 @@ export default function SetupProfile() {
     })();
   }, [checking, user, navigate]);
 
-  useEffect(() => {
-    if (!displayName) {
-      setError("");
-      return;
-    }
-    setError(validateDisplayName(displayName) || "");
-  }, [displayName]);
-
   const validationMsg = useMemo(() => {
     if (!touched) return null; // 触ってない間は何も出さない
     if (displayName.length === 0) return null; // 空欄も何も出さない
@@ -104,22 +95,17 @@ export default function SetupProfile() {
   const isInvalid = touched && displayName.length > 0 && !!validationMsg;
 
   const canSubmit =
-    displayName.trim().length >= 3 && !validateDisplayName(displayName);
+    !saving &&
+    displayName.trim().length >= 3 &&
+    !validateDisplayName(displayName) &&
+    !!countryCode;
 
   const onSubmit = async () => {
     const msg = validateDisplayName(displayName);
-    if (msg) {
-      setError(msg);
-      return;
-    }
-    if (!countryCode) {
-      setError("国を選択してください");
-      return;
-    }
+    if (msg) return;
+    if (!countryCode) return;
 
-    setError("");
     setSaving(true);
-
     try {
       await savePublicProfile(user.uid, {
         publicDisplayName: displayName.trim(),
@@ -128,9 +114,6 @@ export default function SetupProfile() {
       });
 
       navigate(`/u/${user.uid}`, { replace: true });
-    } catch (e) {
-      console.error(e);
-      setError("保存に失敗しました。もう一度お試しください。");
     } finally {
       setSaving(false);
     }
