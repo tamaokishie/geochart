@@ -1,12 +1,11 @@
-// src/pages/LoginGate.js
 import { useEffect, useState } from "react";
 import "../App.css";
 
-import { auth, signInWithGoogle, savePublicProfile } from "../firebase";
+import { auth, signInWithGoogle, ensurePublicProfile } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
-function LoginGate() {
+function Signin() {
   const navigate = useNavigate();
   // ログイン状態が確定するまでのちらつき防止
   const [checking, setChecking] = useState(true);
@@ -84,8 +83,8 @@ function LoginGate() {
           className="google-btn"
           onClick={async () => {
             const u = await signInWithGoogle();
-            await savePublicProfile(u);
-            navigate(`/u/${u.uid}`, { replace: true });
+            await ensurePublicProfile(u.uid);
+            navigate("/setup-profile", { replace: true });
           }}
         >
           <img src="/google/web_light_sq_ctn.svg" alt="Sign in with Google" />
@@ -100,4 +99,4 @@ function LoginGate() {
   );
 }
 
-export default LoginGate;
+export default Signin;

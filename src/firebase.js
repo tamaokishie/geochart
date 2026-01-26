@@ -48,23 +48,51 @@ export async function saveVisited(countries) {
   await setDoc(ref, { countries, updatedAt: Date.now() }, { merge: true });
 }
 
-export async function savePublicProfile(user) {
-  const ref = doc(db, "users", user.uid, "profile", "public");
+/**
+ * public profile を取得
+ * - アプリ内表示名: publicDisplayName を使う
+ */
+export async function loadPublicProfile(uid) {
+  const ref = doc(db, "users", uid, "profile", "public");
+  const snap = await getDoc(ref);
+  return snap.exists() ? snap.data() : null;
+}
+
+/**
+ * public profile をアップサート（アプリ内表示名を保存）
+ * Googleの displayName は保存に使わない（実名事故防止）
+ */
+export async function savePublicProfile(uid, profilePatch) {
+  const ref = doc(db, "users", uid, "profile", "public");
   await setDoc(
     ref,
     {
-      displayName: user.displayName ?? "Anonymous",
-      photoURL: user.photoURL ?? null,
+      ...profilePatch,
       updatedAt: Date.now(),
     },
     { merge: true }
   );
 }
 
-export async function loadPublicProfile(uid) {
+/**
+ * 初回だけ doc が無い場合に最低限作る（任意）
+ * photoURL は保存しても良いが、表示名は絶対入れない
+ */
+export async function ensurePublicProfile(uid) {
   const ref = doc(db, "users", uid, "profile", "public");
   const snap = await getDoc(ref);
-  return snap.exists() ? snap.data() : null;
+  if (snap.exists()) return;
+
+  await setDoc(
+    ref,
+    {
+      publicDisplayName: "", // 未設定
+      photoURL: auth.currentUser?.photoURL ?? null,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    },
+    { merge: true }
+  );
 }
 
 export async function loadVisitedByUid(uid) {

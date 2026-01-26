@@ -41,7 +41,7 @@ function MapPage() {
     if (!uid) return;
 
     loadPublicProfile(uid).then((p) => {
-      setOwnerName(p?.displayName || "Someone");
+      setOwnerName(p?.publicDisplayName || "Someone");
     });
   }, [uid]);
 
