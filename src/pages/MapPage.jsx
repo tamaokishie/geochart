@@ -10,6 +10,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MenuItem from "@mui/material/MenuItem";
 import LogoutIcon from "@mui/icons-material/Logout";
+import EditIcon from "@mui/icons-material/Edit";
 
 import {
   auth,
@@ -97,10 +98,11 @@ function MapPage() {
       const options = {
         colorAxis: { colors: ["#e0e0e0", "#ff5252"] },
         legend: "none",
+        tooltip: { trigger: "none" },
       };
 
       const chart = new window.google.visualization.GeoChart(
-        document.getElementById("regions_div")
+        document.getElementById("regions_div"),
       );
 
       window.google.visualization.events.removeAllListeners(chart);
@@ -121,7 +123,7 @@ function MapPage() {
             saveVisited(updated);
             return updated;
           });
-        }
+        },
       );
 
       chart.draw(data, options);
@@ -189,8 +191,8 @@ function MapPage() {
         <div className="app-title-block">
           <h1 className="app-title">
             {ownerName
-              ? `${ownerName}'s Visited Countries Map`
-              : "Visited Countries Map"}
+              ? `${ownerName} / visited countries`
+              : "visited countries"}
           </h1>
           <div className="app-level">Level: {level}</div>
         </div>
@@ -232,7 +234,17 @@ function MapPage() {
                   </div>
 
                   <div className="user-menu-sep" />
-
+                  {isOwner && (
+                    <MenuItem
+                      onClick={() => {
+                        setMenuOpen(false);
+                        navigate("/setup-profile?mode=edit");
+                      }}
+                    >
+                      <EditIcon fontSize="small" sx={{ mr: 1 }} />
+                      Edit profile
+                    </MenuItem>
+                  )}
                   <MenuItem onClick={handleLogout}>
                     <LogoutIcon fontSize="small" sx={{ mr: 1 }} />
                     Sign out

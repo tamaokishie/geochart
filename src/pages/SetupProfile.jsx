@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { auth, loadPublicProfile, savePublicProfile } from "../firebase";
 import TextField from "@mui/material/TextField";
@@ -35,6 +35,8 @@ const COUNTRY_OPTIONS = [
 
 export default function SetupProfile() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isEdit = searchParams.get("mode") === "edit";
 
   const [checking, setChecking] = useState(true);
   const [user, setUser] = useState(null);
@@ -63,7 +65,7 @@ export default function SetupProfile() {
     }
   }, [checking, user, navigate]);
 
-  // 3) すでに登録済みなら /u/:uid へ。未設定なら初期値投入
+  // プロフィール読み込み
   useEffect(() => {
     if (checking || !user) return;
 
@@ -72,23 +74,29 @@ export default function SetupProfile() {
         const p = await loadPublicProfile(user.uid);
 
         const currentName = p?.publicDisplayName;
-        if (currentName && String(currentName).trim().length > 0) {
+
+        // 初回のみ：既に登録済みなら地図へ
+        if (!isEdit && currentName && currentName.trim().length > 0) {
           navigate(`/u/${user.uid}`, { replace: true });
           return;
         }
 
-        // もし既に country が入ってたら反映（任意）
-        if (p?.countryCode) setCountryCode(p.countryCode);
+        // 編集モード：既存値をフォームに反映
+        if (isEdit) {
+          setDisplayName(currentName ? String(currentName) : "");
+          if (p?.countryCode) setCountryCode(p.countryCode);
+          setTouched(false);
+        }
       } catch (e) {
         console.error(e);
       }
     })();
-  }, [checking, user, navigate]);
+  }, [checking, user, isEdit, navigate]);
 
   const validationMsg = useMemo(() => {
-    if (!touched) return null; // 触ってない間は何も出さない
-    if (displayName.length === 0) return null; // 空欄も何も出さない
-    return validateDisplayName(displayName); // NGならメッセージ、OKならnull
+    if (!touched) return null;
+    if (displayName.length === 0) return null;
+    return validateDisplayName(displayName);
   }, [displayName, touched]);
 
   const isValid = touched && displayName.length > 0 && !validationMsg;
@@ -102,8 +110,7 @@ export default function SetupProfile() {
 
   const onSubmit = async () => {
     const msg = validateDisplayName(displayName);
-    if (msg) return;
-    if (!countryCode) return;
+    if (msg || !countryCode) return;
 
     setSaving(true);
     try {
@@ -119,8 +126,7 @@ export default function SetupProfile() {
     }
   };
 
-  if (checking) return null;
-  if (!user) return null;
+  if (checking || !user) return null;
 
   return (
     <div
@@ -135,11 +141,47 @@ export default function SetupProfile() {
       }}
     >
       <div style={{ width: "min(560px, 100%)" }}>
-        <h1 style={{ margin: 0, fontSize: 26, fontWeight: 900 }}>
-          Create your account
-        </h1>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+          }}
+        >
+          <h1 style={{ margin: 0, fontSize: 26, fontWeight: 900 }}>
+            {isEdit ? "Edit profile" : "Create your account"}
+          </h1>
+
+          {isEdit && (
+            <button
+              onClick={() => navigate(-1)}
+              type="button"
+              style={{
+                border: "none",
+                background: "transparent",
+                padding: 0,
+                fontSize: 14,
+                fontWeight: 600,
+                color: "rgba(0,0,0,0.45)",
+                cursor: "pointer",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.color = "rgba(0,0,0,0.65)")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.color = "rgba(0,0,0,0.35)")
+              }
+            >
+              ✖
+            </button>
+          )}
+        </div>
+
         <div style={{ marginTop: 8, color: "rgba(0,0,0,0.65)", fontSize: 14 }}>
-          This is your in-app profile, please register.
+          {isEdit
+            ? "Update your public profile."
+            : "This is your in-app profile, please register."}
         </div>
 
         <div
@@ -151,7 +193,7 @@ export default function SetupProfile() {
             padding: 18,
           }}
         >
-          {/* Email（GitHubっぽく表示だけ） */}
+          {/* Email */}
           <div style={{ marginBottom: 14 }}>
             <label style={{ display: "block", fontSize: 12, fontWeight: 800 }}>
               Email
@@ -180,12 +222,12 @@ export default function SetupProfile() {
             </label>
             <div style={{ marginTop: 6 }}>
               <TextField
+                value={displayName}
                 onChange={(e) => {
                   setDisplayName(e.target.value);
                   if (!touched) setTouched(true);
                 }}
                 onBlur={() => setTouched(true)}
-                placeholder="" // 空欄スタートならこれでOK
                 fullWidth
                 size="small"
                 error={isInvalid} // 枠が赤になる
@@ -218,14 +260,7 @@ export default function SetupProfile() {
 
           {/* Country/Region */}
           <div style={{ marginTop: 18 }}>
-            <label
-              style={{
-                display: "block",
-                fontSize: 13,
-                fontWeight: 700,
-                marginBottom: 6,
-              }}
-            >
+            <label style={{ display: "block", fontSize: 12, fontWeight: 800 }}>
               Your Country / Region
             </label>
             <TextField
@@ -272,7 +307,13 @@ export default function SetupProfile() {
               color: "#fff",
             }}
           >
-            {saving ? "Creating..." : "Create account"}
+            {saving
+              ? isEdit
+                ? "Saving..."
+                : "Creating..."
+              : isEdit
+                ? "Save"
+                : "Create account"}
           </button>
         </div>
       </div>

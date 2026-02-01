@@ -234,6 +234,94 @@
   background: rgba(0, 0, 0, 0.03);
 }
 
+.signin-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #f6f7f9; /* うっすらグレーが一気にプロダクト感出る */
+  font-family:
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+.signin-card {
+  width: min(520px, 100%);
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.1);
+}
+
+.signin-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.signin-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(82, 203, 255, 0.14);
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+}
+
+.signin-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.signin-appname {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111;
+  line-height: 1.2;
+}
+
+.signin-subtitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.signin-desc {
+  margin: 16px 0 14px;
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.signin-google-btn {
+  all: unset;
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.signin-google-btn:focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.25);
+  outline-offset: 3px;
+}
+
+.signin-google-img {
+  display: block;
+  height: 44px; /* 押しやすいサイズ */
+}
+
+.signin-note {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.55);
+}
+
 /* スマホ */
 @media (max-width: 768px) {
   .geo-chart {

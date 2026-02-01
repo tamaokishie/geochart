@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 
 function Signin() {
   const navigate = useNavigate();
-  // ログイン状態が確定するまでのちらつき防止
   const [checking, setChecking] = useState(true);
   const [user, setUser] = useState(null);
 
@@ -19,81 +18,45 @@ function Signin() {
     return () => unsub();
   }, []);
 
-  // 読み込み中は何も出さない
   if (checking) return null;
-
-  // すでにログイン済みなら、この画面は出さない（MapPage側で表示を進める想定）
   if (user) return null;
 
   return (
-    <div
-      className="app-container"
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 24,
-      }}
-    >
-      <div
-        style={{
-          width: "min(520px, 100%)",
-          background: "#fff",
-          border: "1px solid rgba(0,0,0,0.08)",
-          borderRadius: 16,
-          padding: 24,
-          boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 12,
-              background: "rgba(82, 203, 255, 0.12)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 22,
-            }}
-          >
+    <div className="signin-page">
+      <div className="signin-card" role="dialog" aria-label="Sign in">
+        <div className="signin-header">
+          <div className="signin-mark" aria-hidden="true">
             🌍
           </div>
-          <div>
-            <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800 }}>
-              Visited Countries Map
-            </h1>
+          <div className="signin-titles">
+            <div className="signin-appname">Visited Countries Map</div>
+            <div className="signin-subtitle">Sign in to continue</div>
           </div>
         </div>
 
-        <div
-          style={{ marginTop: 18, color: "rgba(0,0,0,0.7)", lineHeight: 1.6 }}
-        >
-          <div style={{ fontWeight: 700, marginBottom: 6 }}>
-            ログインが必要です
-          </div>
-          <div style={{ fontSize: 14 }}>
-            Googleアカウントでログインすると、あなたの訪問国データを保存します。
-          </div>
-        </div>
+        <p className="signin-desc">
+          Sign in with your Google account to save your visited countries.
+        </p>
 
         <button
-          className="google-btn"
+          className="signin-google-btn"
           onClick={async () => {
             const u = await signInWithGoogle();
             await ensurePublicProfile(u.uid);
             navigate("/setup-profile", { replace: true });
           }}
         >
-          <img src="/google/web_light_sq_ctn.svg" alt="Sign in with Google" />
+          <img
+            className="signin-google-img"
+            src="/google/web_light_sq_ctn.svg"
+            alt="Continue with Google"
+          />
         </button>
 
-        <div style={{ marginTop: 12, fontSize: 12, color: "rgba(0,0,0,0.55)" }}>
-          ※
-          位置情報や連絡先にはアクセスしません。保存されるのは訪問国データだけです。
-        </div>
+        <p className="signin-note">
+          We don’t access your location or contacts. Only visited-country data
+          is stored.
+        </p>
       </div>
     </div>
   );
