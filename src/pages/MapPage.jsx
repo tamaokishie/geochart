@@ -11,6 +11,9 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MenuItem from "@mui/material/MenuItem";
 import LogoutIcon from "@mui/icons-material/Logout";
 import EditIcon from "@mui/icons-material/Edit";
+import IconButton from "@mui/material/IconButton";
+import ShareIcon from "@mui/icons-material/Share";
+import Tooltip from "@mui/material/Tooltip";
 
 import {
   auth,
@@ -35,6 +38,7 @@ function MapPage() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [menuOpen, setMenuOpen] = useState(false);
   const [ownerName, setOwnerName] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const isOwner = user?.uid === uid;
 
@@ -45,6 +49,12 @@ function MapPage() {
       setOwnerName(p?.publicDisplayName || "Someone");
     });
   }, [uid]);
+
+  useEffect(() => {
+    if (!copied) return;
+    const t = setTimeout(() => setCopied(false), 1800);
+    return () => clearTimeout(t);
+  }, [copied]);
 
   useEffect(() => {
     const onDocClick = (e) => {
@@ -175,6 +185,12 @@ function MapPage() {
     }));
   };
 
+  const handleShare = async () => {
+    const url = `${window.location.origin}/u/${uid}`;
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+  };
+
   const level = selectedCountries.length;
 
   return (
@@ -198,6 +214,52 @@ function MapPage() {
         </div>
 
         <div className="user-menu-wrap">
+          <Tooltip title="Copy link">
+            <IconButton
+              size="small"
+              onClick={handleShare}
+              aria-label="copy profile link"
+              sx={{
+                width: 40,
+                height: 40,
+              }}
+            >
+              <ShareIcon />
+            </IconButton>
+          </Tooltip>
+
+          {copied && (
+            <div
+              style={{
+                position: "fixed",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                pointerEvents: "none",
+                zIndex: 1400,
+              }}
+            >
+              <div
+                style={{
+                  background: "rgba(0,0,0,0.75)",
+                  color: "#fff",
+                  padding: "14px 22px",
+                  borderRadius: 10,
+                  fontSize: "1.05rem",
+                  fontWeight: 500,
+                  display: "flex",
+                  alignItems: "center",
+                  animation: "fadeToast 1.8s ease-out forwards",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                }}
+              >
+                <span style={{ marginRight: 8, fontSize: "1.2rem" }}>✓</span>
+                Link copied
+              </div>
+            </div>
+          )}
+
           {user ? (
             <>
               {user.photoURL && (

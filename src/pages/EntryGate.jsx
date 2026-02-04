@@ -4,7 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import Signin from "./Signin";
 
-export default function HomePage() {
+export default function EntryGate() {
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);
   const [user, setUser] = useState(null);

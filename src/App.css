@@ -322,6 +322,24 @@
   color: rgba(0, 0, 0, 0.55);
 }
 
+/* リンクコピーダイアログをフェードアウト */
+@keyframes fadeToast {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  10% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 /* スマホ */
 @media (max-width: 768px) {
   .geo-chart {
